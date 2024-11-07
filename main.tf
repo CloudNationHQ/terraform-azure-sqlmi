@@ -1,13 +1,7 @@
 # managed instance
 resource "azurerm_mssql_managed_instance" "sql" {
-  resource_group_name = coalesce(
-    var.config.resource_group, var.resource_group
-  )
-
-  location = coalesce(
-    var.config.location, var.location
-  )
-
+  resource_group_name            = coalesce(try(var.config.resource_group, null), var.resource_group)
+  location                       = coalesce(try(var.config.location, null), var.location)
   name                           = var.config.name
   sku_name                       = var.config.sku_name
   license_type                   = try(var.config.license_type, "LicenseIncluded")
