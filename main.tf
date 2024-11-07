@@ -1,11 +1,9 @@
 # managed instance
 resource "azurerm_mssql_managed_instance" "sql" {
-  resource_group_name = coalesce(
-    var.config.resource_group, var.resource_group
+  resource_group_name = coalesce(try(var.config.resource_group, null), var.resource_group
   )
 
-  location = coalesce(
-    var.config.location, var.location
+  location = coalesce(try(var.config.location, null), var.location
   )
 
   name                           = var.config.name
