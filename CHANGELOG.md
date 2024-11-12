@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v1.1.1...v1.2.0) (2024-11-12)
+
+
+### Features
+
+* enhance testing with sequential, parallel modes and flags for exceptions and skip-destroy ([#10](https://github.com/CloudNationHQ/terraform-azure-sqlmi/issues/10)) ([18377b5](https://github.com/CloudNationHQ/terraform-azure-sqlmi/commit/18377b5ad7e7ad9a70346afe145f4d4900fe7774))
+
 ## [1.1.1](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v1.1.0...v1.1.1) (2024-11-07)
 
 
