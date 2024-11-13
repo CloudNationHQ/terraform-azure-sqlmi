@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v1.2.0...v1.3.0) (2024-11-13)
+
+
+### Features
+
+* add ad admin support ([#12](https://github.com/CloudNationHQ/terraform-azure-sqlmi/issues/12)) ([9af4896](https://github.com/CloudNationHQ/terraform-azure-sqlmi/commit/9af4896ecd075f9e2d39105e9c5c9408df4fdd86))
+
 ## [1.2.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v1.1.1...v1.2.0) (2024-11-12)
 
 
