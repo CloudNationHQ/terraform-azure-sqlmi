@@ -21,6 +21,18 @@ resource "azurerm_mssql_managed_instance" "sql" {
   zone_redundant_enabled         = try(var.config.zone_redundant_enabled, false)
   timezone_id                    = try(var.config.timezone_id, "UTC")
 
+
+  dynamic "identity" {
+    for_each = try(var.config.identity, null) != null ? { "default" = var.config.identity } : {}
+
+    content {
+      type = identity.value.type
+      identity_ids = try(
+        identity.value.identity_ids, [],
+      )
+    }
+  }
+
   tags = try(
     var.config.tags, var.tags, {}
   )
@@ -87,4 +99,68 @@ resource "azurerm_mssql_managed_instance_vulnerability_assessment" "assessment" 
   }
 
   depends_on = [azurerm_mssql_managed_instance_security_alert_policy.policy]
+}
+
+data "azurerm_client_config" "current" {
+}
+
+data "azuread_service_principal" "current" {
+  for_each = try(var.config.ad_admin.principal_type, null) == "ServicePrincipal" ? { "id" = {} } : {}
+
+  object_id = try(var.config.ad_admin.object_id, null) != null ? var.config.ad_admin.object_id : try(
+  var.config.ad_admin.display_name, null) == null ? data.azurerm_client_config.current.object_id : null
+
+  display_name = try(var.config.ad_admin.display_name, null)
+}
+
+data "azuread_user" "current" {
+  for_each = try(var.config.ad_admin.principal_type, null) == "User" ? { "id" = {} } : {}
+
+  object_id = try(var.config.ad_admin.object_id, null) != null ? var.config.ad_admin.object_id : try(
+  var.config.ad_admin.user_principal_name, null) == null ? data.azurerm_client_config.current.object_id : null
+
+  user_principal_name = try(var.config.ad_admin.user_principal_name, null)
+}
+
+data "azuread_group" "current" {
+  for_each = try(var.config.ad_admin.principal_type, null) == "Group" ? { "id" = {} } : {}
+
+  object_id    = try(var.config.ad_admin.object_id, null)
+  display_name = try(var.config.ad_admin.display_name, null)
+}
+
+
+resource "azurerm_mssql_managed_instance_active_directory_administrator" "sql" {
+  for_each = try(var.config.ad_admin, null) != null ? { "ad_admin" = {} } : {}
+
+  managed_instance_id         = azurerm_mssql_managed_instance.sql.id
+  tenant_id                   = try(var.config.ad_admin.tenant_id, data.azurerm_client_config.current.tenant_id)
+  azuread_authentication_only = try(var.config.ad_admin.azuread_authentication_only, false)
+
+  login_username = var.config.ad_admin.principal_type == "User" ? data.azuread_user.current[
+  "id"].user_principal_name : var.config.ad_admin.principal_type == "Group" ? data.azuread_group.current["id"].display_name : data.azuread_service_principal.current["id"].display_name
+  object_id = var.config.ad_admin.principal_type == "User" ? data.azuread_user.current[
+  "id"].object_id : var.config.ad_admin.principal_type == "Group" ? data.azuread_group.current["id"].object_id : data.azuread_service_principal.current["id"].object_id
+
+  depends_on = [time_sleep.wait_after_directory_role_assignment]
+}
+
+## In order to set an Active Directory Admin, you need to assign the Directory Readers role to the system assigned managed identity of the SQL Managed Instance.
+resource "azuread_directory_role" "reader" {
+  for_each     = try(var.config.ad_admin, null) != null ? { "ad_admin" = {} } : {}
+  display_name = "Directory Readers"
+}
+
+resource "azuread_directory_role_assignment" "role" {
+  for_each = try(var.config.ad_admin, null) != null ? { "ad_admin" = {} } : {}
+
+  role_id             = azuread_directory_role.reader["ad_admin"].template_id
+  principal_object_id = azurerm_mssql_managed_instance.sql.identity[0].principal_id
+}
+
+resource "time_sleep" "wait_after_directory_role_assignment" {
+  for_each = try(var.config.ad_admin, null) != null ? { "ad_admin" = {} } : {}
+
+  depends_on      = [azuread_directory_role_assignment.role]
+  create_duration = "10s"
 }

@@ -8,7 +8,7 @@ install-tools:
 	@go install github.com/terraform-docs/terraform-docs@latest
 
 test:
-	cd tests && go test -v -timeout 60m -run TestApplyNoError/$(EXAMPLE) ./deploy_test.go
+	cd tests && go test -v -timeout 120m -run TestApplyNoError/$(EXAMPLE) ./deploy_test.go
 
 docs:
 	@echo "Generating documentation for root and modules..."
