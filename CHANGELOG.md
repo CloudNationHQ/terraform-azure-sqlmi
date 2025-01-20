@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.4.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v1.3.0...v1.4.0) (2025-01-20)
+
+
+### Features
+
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#15](https://github.com/CloudNationHQ/terraform-azure-sqlmi/issues/15)) ([a40a92f](https://github.com/CloudNationHQ/terraform-azure-sqlmi/commit/a40a92f1ed4ec3f29387b788703392e5d5b3533d))
+* **deps:** bump golang.org/x/net from 0.31.0 to 0.33.0 in /tests ([#18](https://github.com/CloudNationHQ/terraform-azure-sqlmi/issues/18)) ([9f7ab48](https://github.com/CloudNationHQ/terraform-azure-sqlmi/commit/9f7ab48b55d9bbd5988bd82c03da096d30b2c970))
+* remove temporary files when deployment tests fails ([#16](https://github.com/CloudNationHQ/terraform-azure-sqlmi/issues/16)) ([51cd77f](https://github.com/CloudNationHQ/terraform-azure-sqlmi/commit/51cd77fcf120c2ec0d2be775c6c428b17b41fdc9))
+
 ## [1.3.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v1.2.0...v1.3.0) (2024-11-13)
 
 
