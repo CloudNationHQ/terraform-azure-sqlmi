@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v1.4.0...v2.0.0) (2025-06-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* The data structure changed, causing a recreate on existing resources.
+
+### Features
+
+* small refactor ([#25](https://github.com/CloudNationHQ/terraform-azure-sqlmi/issues/25)) ([849eea4](https://github.com/CloudNationHQ/terraform-azure-sqlmi/commit/849eea4968e10fa434a5b8c4b3f2ee75a8dfb03f))
+
 ## [1.4.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v1.3.0...v1.4.0) (2025-01-20)
 
 
