@@ -11,6 +11,14 @@
 
 * small refactor ([#25](https://github.com/CloudNationHQ/terraform-azure-sqlmi/issues/25)) ([849eea4](https://github.com/CloudNationHQ/terraform-azure-sqlmi/commit/849eea4968e10fa434a5b8c4b3f2ee75a8dfb03f))
 
+### Upgrade from v1.4.0 to v2.0.0:
+
+- Update module reference to: `version = "~> 2.0"`
+- The property and variable resource_group is renamed to resource_group_name
+- The data structure changed for long_term_retention_policy and point_in_time_restore regarding databases
+
+For more details see the usage examples
+
 ## [1.4.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v1.3.0...v1.4.0) (2025-01-20)
 
 
