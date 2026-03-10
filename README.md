@@ -75,7 +75,9 @@ object({
     license_type                   = optional(string, "LicenseIncluded")
     administrator_login            = optional(string, "adminLogin")
     collation                      = optional(string, "SQL_Latin1_General_CP1_CI_AS")
+    database_format                = optional(string, "SQLServer2022")
     dns_zone_partner_id            = optional(string)
+    hybrid_secondary_usage         = optional(string, "Active")
     maintenance_configuration_name = optional(string, "SQL_Default")
     minimum_tls_version            = optional(string, "1.2")
     proxy_override                 = optional(string, "Default")
@@ -92,11 +94,13 @@ object({
     databases = optional(map(object({
       name                      = string
       short_term_retention_days = optional(number, 7)
+      tags                      = optional(map(string))
       long_term_retention_policy = optional(object({
-        week_of_year      = optional(number)
-        weekly_retention  = optional(string)
-        yearly_retention  = optional(string)
-        monthly_retention = optional(string)
+        weekly_retention          = optional(string)
+        monthly_retention         = optional(string)
+        yearly_retention          = optional(string)
+        week_of_year              = optional(number)
+        immutable_backups_enabled = optional(bool, false)
       }))
       point_in_time_restore = optional(object({
         source_database_id    = string
