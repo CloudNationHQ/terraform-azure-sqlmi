@@ -20,7 +20,9 @@ resource "azurerm_mssql_managed_instance" "sql" {
   subnet_id                      = var.config.subnet_id
   vcores                         = var.config.vcores
   collation                      = var.config.collation
+  database_format                = var.config.database_format
   dns_zone_partner_id            = var.config.dns_zone_partner_id
+  hybrid_secondary_usage         = var.config.hybrid_secondary_usage
   maintenance_configuration_name = var.config.maintenance_configuration_name
   minimum_tls_version            = var.config.minimum_tls_version
   proxy_override                 = var.config.proxy_override
@@ -53,15 +55,19 @@ resource "azurerm_mssql_managed_database" "databases" {
   name                      = each.value.name
   managed_instance_id       = azurerm_mssql_managed_instance.sql.id
   short_term_retention_days = each.value.short_term_retention_days
+  tags = coalesce(
+    each.value.tags, var.config.tags, var.tags
+  )
 
   dynamic "long_term_retention_policy" {
     for_each = try(each.value.long_term_retention_policy, null) != null ? { "default" = each.value.long_term_retention_policy } : {}
 
     content {
-      week_of_year      = long_term_retention_policy.value.week_of_year
-      weekly_retention  = long_term_retention_policy.value.weekly_retention
-      yearly_retention  = long_term_retention_policy.value.yearly_retention
-      monthly_retention = long_term_retention_policy.value.monthly_retention
+      weekly_retention          = long_term_retention_policy.value.weekly_retention
+      monthly_retention         = long_term_retention_policy.value.monthly_retention
+      yearly_retention          = long_term_retention_policy.value.yearly_retention
+      week_of_year              = long_term_retention_policy.value.week_of_year
+      immutable_backups_enabled = long_term_retention_policy.value.immutable_backups_enabled
     }
   }
 
