@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v2.0.0...v2.1.0) (2026-03-11)
+
+
+### Features
+
+* schema validation items for sqlmi ([#28](https://github.com/CloudNationHQ/terraform-azure-sqlmi/issues/28)) ([4628fe3](https://github.com/CloudNationHQ/terraform-azure-sqlmi/commit/4628fe3a7daa444c9ffb3c3ffaaec175826a0a2c))
+
 ## [2.0.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v1.4.0...v2.0.0) (2025-06-25)
 
 
