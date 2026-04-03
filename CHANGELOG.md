@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v2.1.0...v2.2.0) (2026-04-03)
+
+
+### Features
+
+* add missing outputs ([#33](https://github.com/CloudNationHQ/terraform-azure-sqlmi/issues/33)) ([b4bcd37](https://github.com/CloudNationHQ/terraform-azure-sqlmi/commit/b4bcd373dcf9cb4155992b7958b74fd76ca9e417))
+* **deps:** bump github.com/cloudnationhq/az-cn-go-validor in /tests ([#31](https://github.com/CloudNationHQ/terraform-azure-sqlmi/issues/31)) ([c319a53](https://github.com/CloudNationHQ/terraform-azure-sqlmi/commit/c319a53afb7260a721a9da4aefaa706e712b3f69))
+
 ## [2.1.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v2.0.0...v2.1.0) (2026-03-11)
 
 
