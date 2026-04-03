@@ -173,6 +173,10 @@ Default: `{}`
 
 The following outputs are exported:
 
+### <a name="output_ad_admin"></a> [ad\_admin](#output\_ad\_admin)
+
+Description: Contains all sql managed instance active directory administrator configuration
+
 ### <a name="output_config"></a> [config](#output\_config)
 
 Description: Contains all sql managed instance configuration
@@ -180,6 +184,14 @@ Description: Contains all sql managed instance configuration
 ### <a name="output_databases"></a> [databases](#output\_databases)
 
 Description: Contains all sql managed instance databases
+
+### <a name="output_security_alert_policy"></a> [security\_alert\_policy](#output\_security\_alert\_policy)
+
+Description: Contains all sql managed instance security alert policy configuration
+
+### <a name="output_vulnerability_assessment"></a> [vulnerability\_assessment](#output\_vulnerability\_assessment)
+
+Description: Contains all sql managed instance vulnerability assessment configuration
 <!-- END_TF_DOCS -->
 
 ## Goals
