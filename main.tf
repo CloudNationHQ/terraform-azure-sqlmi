@@ -1,39 +1,38 @@
 # managed instance
-resource "azurerm_mssql_managed_instance" "sql" {
+resource "azurerm_mssql_managed_instance" "this" {
   resource_group_name = coalesce(
-    lookup(
-      var.config, "resource_group_name", null
-    ), var.resource_group_name
+    var.mssql_managed_instance.resource_group_name, var.resource_group_name
   )
 
   location = coalesce(
-    lookup(var.config, "location", null
-    ), var.location
+    var.mssql_managed_instance.location, var.location
   )
 
-  name                           = var.config.name
-  sku_name                       = var.config.sku_name
-  license_type                   = var.config.license_type
-  administrator_login            = var.config.administrator_login
-  administrator_login_password   = var.config.administrator_login_password
-  storage_size_in_gb             = var.config.storage_size_in_gb
-  subnet_id                      = var.config.subnet_id
-  vcores                         = var.config.vcores
-  collation                      = var.config.collation
-  database_format                = var.config.database_format
-  dns_zone_partner_id            = var.config.dns_zone_partner_id
-  hybrid_secondary_usage         = var.config.hybrid_secondary_usage
-  maintenance_configuration_name = var.config.maintenance_configuration_name
-  minimum_tls_version            = var.config.minimum_tls_version
-  proxy_override                 = var.config.proxy_override
-  public_data_endpoint_enabled   = var.config.public_data_endpoint_enabled
-  storage_account_type           = var.config.storage_account_type
-  zone_redundant_enabled         = var.config.zone_redundant_enabled
-  timezone_id                    = var.config.timezone_id
-  service_principal_type         = try(var.config.service_principal_type, null) == "SystemAssigned" ? "SystemAssigned" : null
+  name                           = var.mssql_managed_instance.name
+  sku_name                       = var.mssql_managed_instance.sku_name
+  license_type                   = var.mssql_managed_instance.license_type
+  administrator_login            = var.mssql_managed_instance.administrator_login
+  administrator_login_password   = var.mssql_managed_instance.administrator_login_password
+  storage_size_in_gb             = var.mssql_managed_instance.storage_size_in_gb
+  subnet_id                      = var.mssql_managed_instance.subnet_id
+  vcores                         = var.mssql_managed_instance.vcores
+  collation                      = var.mssql_managed_instance.collation
+  database_format                = var.mssql_managed_instance.database_format
+  dns_zone_partner_id            = var.mssql_managed_instance.dns_zone_partner_id
+  hybrid_secondary_usage         = var.mssql_managed_instance.hybrid_secondary_usage
+  maintenance_configuration_name = var.mssql_managed_instance.maintenance_configuration_name
+  minimum_tls_version            = var.mssql_managed_instance.minimum_tls_version
+  proxy_override                 = var.mssql_managed_instance.proxy_override
+  public_data_endpoint_enabled   = var.mssql_managed_instance.public_data_endpoint_enabled
+  storage_account_type           = var.mssql_managed_instance.storage_account_type
+  zone_redundant_enabled         = var.mssql_managed_instance.zone_redundant_enabled
+  timezone_id                    = var.mssql_managed_instance.timezone_id
+  service_principal_type         = var.mssql_managed_instance.service_principal_type
+  general_purpose_v2_enabled     = var.mssql_managed_instance.general_purpose_v2_enabled
+  storage_iops                   = var.mssql_managed_instance.storage_iops
 
   dynamic "identity" {
-    for_each = lookup(var.config, "identity", null) != null ? [var.config.identity] : []
+    for_each = var.mssql_managed_instance.identity != null ? { "this" = var.mssql_managed_instance.identity } : {}
 
     content {
       type         = identity.value.type
@@ -41,57 +40,66 @@ resource "azurerm_mssql_managed_instance" "sql" {
     }
   }
 
+  dynamic "azure_active_directory_administrator" {
+    for_each = var.mssql_managed_instance.azure_active_directory_administrator != null ? { "this" = var.mssql_managed_instance.azure_active_directory_administrator } : {}
+
+    content {
+      login_username                      = azure_active_directory_administrator.value.login_username
+      object_id                           = azure_active_directory_administrator.value.object_id
+      principal_type                      = azure_active_directory_administrator.value.principal_type
+      azuread_authentication_only_enabled = azure_active_directory_administrator.value.azuread_authentication_only_enabled
+      tenant_id                           = azure_active_directory_administrator.value.tenant_id
+    }
+  }
+
   tags = coalesce(
-    var.config.tags, var.tags
+    var.mssql_managed_instance.tags, var.tags
   )
 }
 
 # databases
-resource "azurerm_mssql_managed_database" "databases" {
-  for_each = lookup(
-    var.config, "databases", {}
-  )
+resource "azurerm_mssql_managed_database" "this" {
+  for_each = var.mssql_managed_instance.databases
 
   name                      = each.value.name
-  managed_instance_id       = azurerm_mssql_managed_instance.sql.id
+  managed_instance_id       = azurerm_mssql_managed_instance.this.id
   short_term_retention_days = each.value.short_term_retention_days
-  tags = coalesce(
-    each.value.tags, var.config.tags, var.tags
-  )
+
 
   dynamic "long_term_retention_policy" {
-    for_each = try(each.value.long_term_retention_policy, null) != null ? { "default" = each.value.long_term_retention_policy } : {}
+    for_each = each.value.long_term_retention_policy != null ? { "this" = each.value.long_term_retention_policy } : {}
 
     content {
-      weekly_retention          = long_term_retention_policy.value.weekly_retention
-      monthly_retention         = long_term_retention_policy.value.monthly_retention
-      yearly_retention          = long_term_retention_policy.value.yearly_retention
-      week_of_year              = long_term_retention_policy.value.week_of_year
-      immutable_backups_enabled = long_term_retention_policy.value.immutable_backups_enabled
+      weekly_retention  = long_term_retention_policy.value.weekly_retention
+      monthly_retention = long_term_retention_policy.value.monthly_retention
+      yearly_retention  = long_term_retention_policy.value.yearly_retention
+      week_of_year      = long_term_retention_policy.value.week_of_year
     }
   }
 
   dynamic "point_in_time_restore" {
-    for_each = try(each.value.point_in_time_restore, null) != null ? { "default" = each.value.point_in_time_restore } : {}
+    for_each = each.value.point_in_time_restore != null ? { "this" = each.value.point_in_time_restore } : {}
 
     content {
       source_database_id    = point_in_time_restore.value.source_database_id
       restore_point_in_time = point_in_time_restore.value.restore_point_in_time
     }
   }
+
+  tags = coalesce(
+    each.value.tags, var.mssql_managed_instance.tags, var.tags
+  )
 }
 
 # security alert policy
-resource "azurerm_mssql_managed_instance_security_alert_policy" "policy" {
-  for_each = nonsensitive(lookup(var.config, "security_alert_policy", null) != null ? { "default" = var.config.security_alert_policy } : {})
+resource "azurerm_mssql_managed_instance_security_alert_policy" "this" {
+  for_each = nonsensitive(var.mssql_managed_instance.security_alert_policy != null ? { "this" = var.mssql_managed_instance.security_alert_policy } : {})
 
   resource_group_name = coalesce(
-    lookup(
-      var.config, "resource_group_name", null
-    ), var.resource_group_name
+    var.mssql_managed_instance.resource_group_name, var.resource_group_name
   )
 
-  managed_instance_name        = azurerm_mssql_managed_instance.sql.name
+  managed_instance_name        = azurerm_mssql_managed_instance.this.name
   enabled                      = each.value.enabled
   storage_endpoint             = each.value.storage_endpoint
   storage_account_access_key   = each.value.storage_account_access_key
@@ -102,10 +110,10 @@ resource "azurerm_mssql_managed_instance_security_alert_policy" "policy" {
 }
 
 # vulnerability assessment
-resource "azurerm_mssql_managed_instance_vulnerability_assessment" "assessment" {
-  for_each = nonsensitive(lookup(var.config, "vulnerability_assessment", null) != null ? { "default" = var.config.vulnerability_assessment } : {})
+resource "azurerm_mssql_managed_instance_vulnerability_assessment" "this" {
+  for_each = nonsensitive(var.mssql_managed_instance.vulnerability_assessment != null ? { "this" = var.mssql_managed_instance.vulnerability_assessment } : {})
 
-  managed_instance_id        = azurerm_mssql_managed_instance.sql.id
+  managed_instance_id        = azurerm_mssql_managed_instance.this.id
   storage_container_path     = each.value.storage_container_path
   storage_account_access_key = each.value.storage_account_access_key
   storage_container_sas_key  = each.value.storage_container_sas_key
@@ -116,72 +124,95 @@ resource "azurerm_mssql_managed_instance_vulnerability_assessment" "assessment" 
     emails                    = each.value.recurring_scans.emails
   }
 
-  depends_on = [azurerm_mssql_managed_instance_security_alert_policy.policy]
+  depends_on = [azurerm_mssql_managed_instance_security_alert_policy.this]
 }
 
-data "azurerm_client_config" "current" {
+data "azurerm_client_config" "this" {
 }
 
-data "azuread_service_principal" "current" {
-  for_each = try(var.config.ad_admin.principal_type, null) == "ServicePrincipal" ? { "id" = {} } : {}
+data "azuread_service_principal" "this" {
+  for_each = var.mssql_managed_instance.ad_admin != null ? var.mssql_managed_instance.ad_admin.principal_type == "ServicePrincipal" ? { "this" = var.mssql_managed_instance.ad_admin } : {} : {}
 
-  object_id = try(var.config.ad_admin.object_id, null) != null ? var.config.ad_admin.object_id : try(
-  var.config.ad_admin.display_name, null) == null ? data.azurerm_client_config.current.object_id : null
+  display_name = each.value.display_name
+  client_id    = each.value.client_id
 
-  display_name = try(var.config.ad_admin.display_name, null)
+  object_id = length(compact([each.value.display_name, each.value.client_id])) == 0 ? coalesce(
+    each.value.object_id, data.azurerm_client_config.this.object_id
+  ) : each.value.object_id
 }
 
-data "azuread_user" "current" {
-  for_each = try(var.config.ad_admin.principal_type, null) == "User" ? { "id" = {} } : {}
+data "azuread_user" "this" {
+  for_each = var.mssql_managed_instance.ad_admin != null ? var.mssql_managed_instance.ad_admin.principal_type == "User" ? { "this" = var.mssql_managed_instance.ad_admin } : {} : {}
 
-  object_id = try(var.config.ad_admin.object_id, null) != null ? var.config.ad_admin.object_id : try(
-  var.config.ad_admin.user_principal_name, null) == null ? data.azurerm_client_config.current.object_id : null
+  user_principal_name = each.value.user_principal_name
+  mail                = each.value.mail
+  mail_nickname       = each.value.mail_nickname
+  employee_id         = each.value.employee_id
 
-  user_principal_name = try(var.config.ad_admin.user_principal_name, null)
+  object_id = length(compact([each.value.user_principal_name, each.value.mail, each.value.mail_nickname, each.value.employee_id])) == 0 ? coalesce(
+    each.value.object_id, data.azurerm_client_config.this.object_id
+  ) : each.value.object_id
 }
 
-data "azuread_group" "current" {
-  for_each = try(var.config.ad_admin.principal_type, null) == "Group" ? { "id" = {} } : {}
+data "azuread_group" "this" {
+  for_each = var.mssql_managed_instance.ad_admin != null ? var.mssql_managed_instance.ad_admin.principal_type == "Group" ? { "this" = var.mssql_managed_instance.ad_admin } : {} : {}
 
-  object_id    = try(var.config.ad_admin.object_id, null)
-  display_name = try(var.config.ad_admin.display_name, null)
+  object_id                  = each.value.object_id
+  display_name               = each.value.display_name
+  mail_nickname              = each.value.mail_nickname
+  mail_enabled               = each.value.mail_enabled
+  security_enabled           = each.value.security_enabled
+  include_transitive_members = each.value.include_transitive_members
 }
 
 # active directory administrator
-resource "azurerm_mssql_managed_instance_active_directory_administrator" "sql" {
-  for_each = try(var.config.ad_admin, null) != null ? { "ad_admin" = {} } : {}
+resource "azurerm_mssql_managed_instance_active_directory_administrator" "this" {
+  for_each = var.mssql_managed_instance.ad_admin != null ? { "this" = var.mssql_managed_instance.ad_admin } : {}
 
-  managed_instance_id         = azurerm_mssql_managed_instance.sql.id
-  azuread_authentication_only = var.config.ad_admin.azuread_authentication_only
+  managed_instance_id         = azurerm_mssql_managed_instance.this.id
+  azuread_authentication_only = each.value.azuread_authentication_only
 
   tenant_id = coalesce(
-    var.config.ad_admin.tenant_id, data.azurerm_client_config.current.tenant_id
+    each.value.tenant_id, data.azurerm_client_config.this.tenant_id
   )
 
-  login_username = var.config.ad_admin.principal_type == "User" ? data.azuread_user.current[
-  "id"].user_principal_name : var.config.ad_admin.principal_type == "Group" ? data.azuread_group.current["id"].display_name : data.azuread_service_principal.current["id"].display_name
-  object_id = var.config.ad_admin.principal_type == "User" ? data.azuread_user.current[
-  "id"].object_id : var.config.ad_admin.principal_type == "Group" ? data.azuread_group.current["id"].object_id : data.azuread_service_principal.current["id"].object_id
+  login_username = one(concat(
+    values(data.azuread_user.this)[*].user_principal_name,
+    values(data.azuread_group.this)[*].display_name,
+    values(data.azuread_service_principal.this)[*].display_name,
+  ))
 
-  depends_on = [time_sleep.wait_after_directory_role_assignment]
+  object_id = one(concat(
+    values(data.azuread_user.this)[*].object_id,
+    values(data.azuread_group.this)[*].object_id,
+    values(data.azuread_service_principal.this)[*].object_id,
+  ))
+
+  depends_on = [time_sleep.this]
 }
 
-## In order to set an Active Directory Admin, you need to assign the Directory Readers role to the system assigned managed identity of the SQL Managed Instance.
-resource "azuread_directory_role" "reader" {
-  for_each     = try(var.config.ad_admin, null) != null ? { "ad_admin" = {} } : {}
-  display_name = "Directory Readers"
+resource "azuread_directory_role" "this" {
+  for_each = var.mssql_managed_instance.ad_admin != null ? { "this" = var.mssql_managed_instance.ad_admin } : {}
+
+  template_id  = each.value.directory_role.template_id
+  display_name = each.value.directory_role.template_id == null ? each.value.directory_role.display_name : null
 }
 
-resource "azuread_directory_role_assignment" "role" {
-  for_each = try(var.config.ad_admin, null) != null ? { "ad_admin" = {} } : {}
+resource "azuread_directory_role_assignment" "this" {
+  for_each = var.mssql_managed_instance.ad_admin != null ? { "this" = var.mssql_managed_instance.ad_admin } : {}
 
-  role_id             = azuread_directory_role.reader["ad_admin"].template_id
-  principal_object_id = azurerm_mssql_managed_instance.sql.identity[0].principal_id
+  role_id             = one(values(azuread_directory_role.this)).template_id
+  principal_object_id = one(azurerm_mssql_managed_instance.this.identity).principal_id
+  app_scope_id        = each.value.directory_role_assignment.app_scope_id
+  directory_scope_id  = each.value.directory_role_assignment.directory_scope_id
 }
 
-resource "time_sleep" "wait_after_directory_role_assignment" {
-  for_each = try(var.config.ad_admin, null) != null ? { "ad_admin" = {} } : {}
+resource "time_sleep" "this" {
+  for_each = var.mssql_managed_instance.ad_admin != null ? { "this" = var.mssql_managed_instance.ad_admin } : {}
 
-  depends_on      = [azuread_directory_role_assignment.role]
-  create_duration = "10s"
+  create_duration  = each.value.time_sleep.create_duration
+  destroy_duration = each.value.time_sleep.destroy_duration
+  triggers         = each.value.time_sleep.triggers
+
+  depends_on = [azuread_directory_role_assignment.this]
 }
