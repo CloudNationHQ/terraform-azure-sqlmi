@@ -1,13 +1,11 @@
 module "naming" {
-  source  = "cloudnationhq/naming/azure"
-  version = "~> 0.26"
+  source = "cloudnationhq/naming/azure"
 
   suffix = ["demo", "dev"]
 }
 
 module "rg" {
-  source  = "cloudnationhq/rg/azure"
-  version = "~> 2.0"
+  source = "cloudnationhq/rg/azure"
 
   groups = {
     demo = {
@@ -18,10 +16,8 @@ module "rg" {
 }
 
 module "network" {
-  source  = "cloudnationhq/vnet/azure"
-  version = "~> 9.0"
+  source = "cloudnationhq/vnet/azure"
 
-  naming = local.naming
 
   vnet = {
     name                = module.naming.virtual_network.name
@@ -52,10 +48,8 @@ module "network" {
 }
 
 module "kv" {
-  source  = "cloudnationhq/kv/azure"
-  version = "~> 4.0"
+  source = "cloudnationhq/kv/azure"
 
-  naming = local.naming
 
   vault = {
     name                = module.naming.key_vault.name_unique
@@ -75,18 +69,19 @@ module "kv" {
 
 module "sqlmi" {
   source  = "cloudnationhq/sqlmi/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   location            = module.rg.groups.demo.location
   resource_group_name = module.rg.groups.demo.name
 
-  config = {
+  mssql_managed_instance = {
     name               = module.naming.mssql_server.name_unique
     sku_name           = "GP_Gen5"
     storage_size_in_gb = 32
     vcores             = 4
 
     subnet_id                    = module.network.subnets.sql.id
+    administrator_login          = "adminLogin"
     administrator_login_password = module.kv.secrets.sql.value
   }
 }
