@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.0.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v2.2.0...v3.0.0) (2026-09-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* this change causes recreates
+
+### Features
+
+* azurerm provider 5 upgrade ([#38](https://github.com/CloudNationHQ/terraform-azure-sqlmi/issues/38)) ([3827fbb](https://github.com/CloudNationHQ/terraform-azure-sqlmi/commit/3827fbb822d471692ff5cea8ecccbdd26a76e915))
+* **deps:** bump github.com/cloudnationhq/az-cn-go-validor in /tests ([#34](https://github.com/CloudNationHQ/terraform-azure-sqlmi/issues/34)) ([105eb2f](https://github.com/CloudNationHQ/terraform-azure-sqlmi/commit/105eb2f1cb2d6e299e985bdbf72a4ec91cc98eca))
+* **deps:** bump golang.org/x/crypto from 0.45.0 to 0.52.0 in /tests ([#36](https://github.com/CloudNationHQ/terraform-azure-sqlmi/issues/36)) ([4dc6d95](https://github.com/CloudNationHQ/terraform-azure-sqlmi/commit/4dc6d95e26174deee8e316c597df6d7fe22769ed))
+
 ## [2.2.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v2.1.0...v2.2.0) (2026-04-03)
 
 
