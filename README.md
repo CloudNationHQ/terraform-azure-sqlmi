@@ -29,11 +29,11 @@ The following requirements are needed by this module:
 
 The following providers are used by this module:
 
-- <a name="provider_azuread"></a> [azuread](#provider\_azuread) (~> 3.0)
+- <a name="provider_azuread"></a> [azuread](#provider\_azuread) (3.10.0)
 
 - <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 5.0)
 
-- <a name="provider_time"></a> [time](#provider\_time) (~> 0.12)
+- <a name="provider_time"></a> [time](#provider\_time) (0.14.2)
 
 ## Resources
 
@@ -103,6 +103,7 @@ object({
     databases = optional(map(object({
       name                      = string
       short_term_retention_days = optional(number, 7)
+      recover_database_id       = optional(string)
       tags                      = optional(map(string))
       long_term_retention_policy = optional(object({
         weekly_retention  = optional(string)
