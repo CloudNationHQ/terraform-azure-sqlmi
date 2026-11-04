@@ -64,7 +64,7 @@ resource "azurerm_mssql_managed_database" "this" {
   name                      = each.value.name
   managed_instance_id       = azurerm_mssql_managed_instance.this.id
   short_term_retention_days = each.value.short_term_retention_days
-
+  recover_database_id       = each.value.recover_database_id
 
   dynamic "long_term_retention_policy" {
     for_each = each.value.long_term_retention_policy != null ? { "this" = each.value.long_term_retention_policy } : {}

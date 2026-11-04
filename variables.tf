@@ -40,6 +40,7 @@ variable "mssql_managed_instance" {
     databases = optional(map(object({
       name                      = string
       short_term_retention_days = optional(number, 7)
+      recover_database_id       = optional(string)
       tags                      = optional(map(string))
       long_term_retention_policy = optional(object({
         weekly_retention  = optional(string)
