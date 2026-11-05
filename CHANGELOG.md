@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v3.0.0...v3.1.0) (2026-11-05)
+
+
+### Features
+
+* **deps:** bump github.com/klauspost/compress in /tests ([#39](https://github.com/CloudNationHQ/terraform-azure-sqlmi/issues/39)) ([8b6db1a](https://github.com/CloudNationHQ/terraform-azure-sqlmi/commit/8b6db1a2814e12c37822edaee51744eb9c6f282f))
+
 ## [3.0.0](https://github.com/CloudNationHQ/terraform-azure-sqlmi/compare/v2.2.0...v3.0.0) (2026-09-08)
 
 
